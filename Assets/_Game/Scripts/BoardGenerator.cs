@@ -244,11 +244,6 @@ public class BoardGenerator : MonoBehaviour
             }
         }
 
-        if (_scrollRect.enabled)
-        {
-            _scrollRect.verticalNormalizedPosition = 0f;
-        }
-
         // Step 3: Activate inactive tiles with the values to append
         var inactiveTiles = AllTiles.Where(t => !t.IsActive).Take(valuesToAppend.Count).ToList();
         for (int i = 0; i < valuesToAppend.Count && i < inactiveTiles.Count; i++)
