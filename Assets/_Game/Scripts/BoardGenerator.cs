@@ -10,6 +10,7 @@ public class BoardGenerator : MonoBehaviour
 {
     public List<Tile> AllTiles = new List<Tile>();
     public int Columns = 9;
+    public bool HasWon;
 
     [SerializeField] private BoardController _boardController;
     [SerializeField] private GameObject _tilePrefab;
@@ -62,6 +63,7 @@ public class BoardGenerator : MonoBehaviour
 
     public void NextStage()
     {
+        if (HasWon) return;
         _stage++;
         GameUIManager.Instance.UpdateStageText(_stage);
         GameUIManager.Instance.CurrentAddNumberCount = 6;
@@ -136,6 +138,7 @@ public class BoardGenerator : MonoBehaviour
 
     private IEnumerator GenerateBoard()
     {
+        HasWon = false;
         if (_gameMode == GameMode.Gem)
         {
             _gemTargets = GameManager.Instance.GemTargets;
@@ -270,12 +273,14 @@ public class BoardGenerator : MonoBehaviour
     private void OnGemMatched(object param)
     {
         if (param is not GemType type) return;
+        if (HasWon) return;
         if (!_gemTargets.ContainsKey(type)) return;
         if (_gemTargets[type] <= 0) return;
 
         _gemTargets[type]--;
         if (_gemTargets.All(t => t.Value <= 0))
         {
+            HasWon = true;
             EventDispatch.Dispatch(EventDispatchName.Win, GameManager.Instance.GemTargets);
         }
     }

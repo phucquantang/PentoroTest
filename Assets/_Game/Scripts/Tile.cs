@@ -143,6 +143,7 @@ public class Tile : MonoBehaviour
         IsGem = originalTile.IsGem;
         Gem = originalTile.Gem;
         _button.interactable = originalTile._button.interactable;
+        _clickEffect.sprite = originalTile._clickEffect.sprite;
         _clickEffect.gameObject.SetActive(false);
         _appearEffect.gameObject.SetActive(false);
     }
@@ -189,6 +190,7 @@ public class Tile : MonoBehaviour
         _appearEffect.gameObject.SetActive(false);
         _button.interactable = false;
         _isClicked = false;
+        IsGem = false;
     }
 
     private void GrayOut()
