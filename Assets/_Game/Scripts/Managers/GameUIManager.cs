@@ -184,6 +184,7 @@ public class GameUIManager : MonoBehaviour
         {
             tile1.ShowPair();
             tile2.ShowPair();
+            PlayPopSound();
         }
     }
 
