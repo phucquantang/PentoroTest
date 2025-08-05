@@ -213,13 +213,17 @@ public class CSPSolver
 
         if (result)
         {
-            callback(true, assignment);
+            var final = new int[assignment.Length];
+            Array.Copy(assignment, final, assignment.Length);
+            ReturnPooledArray(assignment);
+            callback(true, final);
         }
         else
         {
             callback(false, null);
             ReturnPooledArray(assignment);
         }
+
     }
 
     private IEnumerator SolveCSPCoroutine(IEnumerator solver)
