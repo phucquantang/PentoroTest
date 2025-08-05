@@ -14,6 +14,7 @@ public class Tile : MonoBehaviour
     [SerializeField] private Image _clickEffect;
     [SerializeField] private Image _appearEffect;
     [SerializeField] private Image _image;
+    [SerializeField] private Image _pairEffect;
     [SerializeField] private Sprite _gemClickEffectSprite;
     [SerializeField] private Sprite _tileDefaultSprite;
     [SerializeField] private TMP_Text _valueText;
@@ -61,10 +62,12 @@ public class Tile : MonoBehaviour
         }
 
         Value = value;
+        IsGem = false;
         _valueText.enabled = true;
         _button.interactable = true;
         _valueText.color = new Color(_valueText.color.r, _valueText.color.g, _valueText.color.b, 1f);
         _isClicked = false;
+        _clickEffect.sprite = null;
         _clickEffect.gameObject.SetActive(false);
         PlayAppearEffect();
     }
@@ -142,6 +145,22 @@ public class Tile : MonoBehaviour
         _button.interactable = originalTile._button.interactable;
         _clickEffect.gameObject.SetActive(false);
         _appearEffect.gameObject.SetActive(false);
+    }
+
+    public void ShowPair()
+    {
+        _pairEffect.DOKill(true);
+        _pairEffect.gameObject.SetActive(true);
+        _pairEffect.transform.localScale = Vector3.zero;
+
+        _pairEffect.transform
+            .DOScale(Vector3.one, 1f)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() =>
+            {
+                _pairEffect.transform.DOScale(Vector3.zero, 0.2f);
+                _pairEffect.gameObject.SetActive(false);
+            });
     }
 
     private void Select()

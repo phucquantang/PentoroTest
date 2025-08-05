@@ -64,6 +64,7 @@ public class BoardGenerator : MonoBehaviour
     {
         _stage++;
         GameUIManager.Instance.UpdateStageText(_stage);
+        GameUIManager.Instance.CurrentAddNumberCount = 6;
         RegenerateLevel();
     }
 
@@ -74,9 +75,9 @@ public class BoardGenerator : MonoBehaviour
 
     public void CheckForLoss()
     {
-        if (!HasAnyValidMoves())
+        if (HasAnyPair() == (null, null))
         {
-            if (GameUIManager.CurrentAddNumberCount <= 0) EventDispatch.Dispatch(EventDispatchName.Lose);
+            if (GameUIManager.Instance.CurrentAddNumberCount <= 0) EventDispatch.Dispatch(EventDispatchName.Lose);
         }
     }
 
@@ -174,6 +175,8 @@ public class BoardGenerator : MonoBehaviour
         {
             Debug.Log("Failed");
         }
+
+        _stage = 1;
     }
 
     private IEnumerator CreateTiles()
@@ -261,13 +264,18 @@ public class BoardGenerator : MonoBehaviour
             yield return StartCoroutine(GenerateGemsForNumbers(valuesToAppend));
         }
 
-        GameUIManager.IsAddingNumbers = false;
+        GameUIManager.Instance.IsAddingNumbers = false;
+        if (_gameMode == GameMode.Gem)
+        {
+            CheckForLoss();
+        }
     }
 
     #region Gem Generation Logic
     private void OnGemMatched(object param)
     {
         if (param is not GemType type) return;
+        if (!_gemTargets.ContainsKey(type)) return;
         if (_gemTargets[type] <= 0) return;
 
         _gemTargets[type]--;
@@ -277,7 +285,7 @@ public class BoardGenerator : MonoBehaviour
         }
     }
 
-    private bool HasAnyValidMoves()
+    public (Tile, Tile) HasAnyPair()
     {
         var count = AllTiles.Count;
 
@@ -295,12 +303,12 @@ public class BoardGenerator : MonoBehaviour
 
                 if (valuesMatch && _boardController.IsMatchValid(tile1, tile2, out List<Tile> blockingTiles))
                 {
-                    return true;
+                    return (tile1, tile2);
                 }
             }
         }
 
-        return false;
+        return (null, null);
     }
 
     private IEnumerator GenerateGemsForNumbers(List<int> numbers)

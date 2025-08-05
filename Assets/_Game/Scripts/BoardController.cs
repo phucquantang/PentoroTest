@@ -171,7 +171,10 @@ public class BoardController : MonoBehaviour
             AudioManager.Instance.PlaySFX("RowClear");
         }
 
-        _boardGenerate.CheckForLoss();
+        if (GameManager.Instance.GameMode == GameMode.Gem)
+        {
+            _boardGenerate.CheckForLoss();
+        }
     }
 
     private void CheckAndMarkRowForClearing(int row)
@@ -196,7 +199,7 @@ public class BoardController : MonoBehaviour
         }
     }
 
-    private void ProcessClearedRows()
+    private bool ProcessClearedRows()
     {
         var sortedRows = new List<int>(_rowsToProcess);
         sortedRows.Sort((a, b) => b.CompareTo(a));
@@ -209,8 +212,9 @@ public class BoardController : MonoBehaviour
 
         var allCleared = _boardGenerate.AllTiles.Where(t => t.IsActive).All(t => t.Value == 0);
 
-        if (allCleared)
-            _boardGenerate.NextStage();
+        if (allCleared) _boardGenerate.NextStage();
+
+        return false;
     }
 
     private void RemoveRowAndShiftUp(int rowToRemove)

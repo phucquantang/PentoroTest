@@ -8,8 +8,19 @@ using UnityEngine.UI;
 public class GameUIManager : MonoBehaviour
 {
     public static GameUIManager Instance;
-    public static bool IsAddingNumbers;
-    public static int CurrentAddNumberCount;
+    public bool IsAddingNumbers;
+
+    public int CurrentAddNumberCount
+    {
+        get => _currentAddNumberCount;
+        set
+        {
+            _currentAddNumberCount = value;
+            _hintText.text = value.ToString();
+        }
+    }
+
+    private int _currentAddNumberCount;
 
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private GameObject _gameWinPanel;
@@ -79,11 +90,11 @@ public class GameUIManager : MonoBehaviour
             UpdateHighScoreText(PlayerPrefs.GetInt("HighScore", 0));
         }
 
+        _stageText.text = "Stage: 1";
         _gameOverPanel.SetActive(false);
         _gameWinPanel.SetActive(false);
         IsAddingNumbers = false;
         CurrentAddNumberCount = GameManager.Instance.AddNumberCount;
-        _hintText.text = GameManager.Instance.AddNumberCount.ToString();
     }
 
     private void OnGemMatched(object param)
@@ -148,7 +159,6 @@ public class GameUIManager : MonoBehaviour
         IsAddingNumbers = true;
         _boardGenerator.AppendActiveTiles();
         CurrentAddNumberCount--;
-        _hintText.text = CurrentAddNumberCount.ToString();
         PlayPopSound();
     }
 
@@ -165,6 +175,16 @@ public class GameUIManager : MonoBehaviour
     public void UpdateHighScoreText(int highScore)
     {
         _highScoreText.text = highScore.ToString();
+    }
+
+    public void UseShowPair()
+    {
+        var (tile1, tile2) = _boardGenerator.HasAnyPair();
+        if (tile1 != null && tile2 != null)
+        {
+            tile1.ShowPair();
+            tile2.ShowPair();
+        }
     }
 
     private void AnimatePanel(GameObject panel, bool show)
